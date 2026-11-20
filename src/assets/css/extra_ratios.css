@@ -46,6 +46,27 @@
         font-size: 1vh;
     }
 
+    /* Narrower columns than 16:9: shrink the date/uptime/type/power row and the traffic header */
+    div#mod_sysinfo {
+        letter-spacing: 0.05vh;
+    }
+    div#mod_sysinfo div {
+        padding: 0.925vh 0.3vh;
+    }
+    div#mod_sysinfo h1 {
+        font-size: 1.3vh;
+    }
+    div#mod_sysinfo h2 {
+        font-size: 1.2vh;
+        white-space: nowrap;
+    }
+    div#mod_conninfo h1 {
+        font-size: 1.3vh;
+    }
+    div#mod_conninfo i {
+        font-size: 1.05vh;
+    }
+
     div#mod_conninfo canvas {
         height: 10vh;
     }
