@@ -2,21 +2,45 @@
   <br>
   <img alt="Logo" src="media/logo.png">
   <br><br>
-  <a href="https://lgtm.com/projects/g/GitSquared/edex-ui/context:javascript"><img alt="undefined" src="https://img.shields.io/lgtm/grade/javascript/g/GitSquared/edex-ui.svg?logo=lgtm&logoWidth=18"/></a>
+  <a href="https://github.com/Marius-1337/edex-ui/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/Marius-1337/edex-ui?style=popout"></a>
+  <a href="https://github.com/Marius-1337/edex-ui/blob/master/LICENSE"><img alt="License" src="https://img.shields.io/github/license/Marius-1337/edex-ui.svg?style=popout"></a>
   <br>
-  <a href="https://github.com/GitSquared/edex-ui/releases/latest"><img alt="undefined" src="https://img.shields.io/github/release/GitSquared/edex-ui.svg?style=popout"></a>
-  <a href="#featured-in"><img alt="undefined" src="https://img.shields.io/github/downloads/GitSquared/edex-ui/total.svg?style=popout"></a>
-  <a href="https://github.com/GitSquared/edex-ui/blob/master/LICENSE"><img alt="undefined" src="https://img.shields.io/github/license/GitSquared/edex-ui.svg?style=popout"></a>
-  <br>
-  <a href="https://github.com/GitSquared/edex-ui/releases/download/v2.2.8/eDEX-UI-Windows.exe" target="_blank"><img alt="undefined" src="https://badgen.net/badge/Download/Windows/?color=blue&icon=windows&label"></a>
-  <a href="https://github.com/GitSquared/edex-ui/releases/download/v2.2.8/eDEX-UI-macOS.dmg" target="_blank"><img alt="undefined" src="https://badgen.net/badge/Download/macOS/?color=grey&icon=apple&label"></a>
-  <a href="https://github.com/GitSquared/edex-ui/releases/download/v2.2.8/eDEX-UI-Linux-x86_64.AppImage" target="_blank"><img alt="undefined" src="https://badgen.net/badge/Download/Linux64/?color=orange&icon=terminal&label"></a>
-  <a href="https://github.com/GitSquared/edex-ui/releases/download/v2.2.8/eDEX-UI-Linux-arm64-AppImage" target="_blank"><img alt="undefined" src="https://badgen.net/badge/Download/LinuxArm64/?color=orange&icon=terminal&label"></a>
-  <a href="https://aur.archlinux.org/packages/edex-ui" target="_blank"><img alt="undefined" src="https://badgen.net/badge/AUR/Package/cyan"></a>
-  <br>
-  <a href="https://github.com/GitSquared/edex-ui/releases/tag/v2.2.8"><strong><i>(Project archived oct. 18th 2021)</i></strong></a>
-  <br><br><br>
+  <a href="https://github.com/Marius-1337/edex-ui/releases/latest/download/eDEX-UI-macOS-arm64.dmg"><img alt="Download for macOS (Apple Silicon)" src="https://badgen.net/badge/Download/macOS%20Apple%20Silicon/?color=grey&icon=apple&label"></a>
+  <br><br>
 </p>
+
+> **This is an unofficial, maintained fork** of [GitSquared/edex-ui](https://github.com/GitSquared/edex-ui), which was archived in October 2021 and no longer runs on current macOS.
+> All credit for eDEX-UI goes to Gabriel "Squared" Saillard and the original contributors. Please report issues with this fork [here](https://github.com/Marius-1337/edex-ui/issues), not upstream.
+
+## What's new in 3.0.0 (this fork)
+
+- **Runs natively on Apple Silicon** under current macOS (tested on macOS 27.2): Electron 12 → 45, `node-pty` 1.1, `@electron/remote` 2, `electron-builder` 26. No Rosetta needed.
+- **Security fix for [CVE-2023-30856](https://nvd.nist.gov/vuln/detail/CVE-2023-30856).** In 2.2.8 and earlier, any website you visited could connect to eDEX's terminal websocket and run shell commands, and the socket also listened on every network interface. The terminal socket now binds to `127.0.0.1` only, rejects other origins, needs a random per-session token, and allows a single client.
+- **Layout fixes for modern Chromium and MacBook screens.** Panel headers no longer overflow, and the keyboard and system panels fit 16:10-ish windows.
+- **Better macOS defaults.** Starts your login shell (zsh) in your home folder instead of bash in the app's config folder, shows the current process correctly, and shows `--°C` where Apple Silicon reports no CPU temperature.
+
+### Installing on macOS
+
+1. Download `eDEX-UI-macOS-arm64.dmg` from the [latest release](https://github.com/Marius-1337/edex-ui/releases/latest) and drag eDEX-UI to Applications.
+2. The build is ad-hoc signed, not notarized by Apple. The first time you open it, macOS will say it can't verify the developer: go to **System Settings → Privacy & Security** and click **Open Anyway**. You only need to do this once.
+
+### Building from source (macOS, Apple Silicon)
+
+Requires Node.js 22+ and the Xcode command-line tools (`xcode-select --install`).
+
+```
+git clone https://github.com/Marius-1337/edex-ui.git
+cd edex-ui
+npm install
+npm run prebuild-darwin
+npm run build-darwin      # → dist/eDEX-UI-macOS-arm64.dmg
+```
+
+Windows and Linux builds are not maintained in this fork yet.
+
+---
+
+*The original README follows.*
 
 eDEX-UI is a fullscreen, cross-platform terminal emulator and system monitor that looks and feels like a sci-fi computer interface.
 
