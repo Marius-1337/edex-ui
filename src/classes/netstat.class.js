@@ -47,6 +47,7 @@ class Netstat {
         };
         let geolite2 = require("geolite2-redist");
         let maxmind = require("maxmind");
+        // GeoIP database download is best-effort: the old redist mirror may be gone, which must not break the UI
         geolite2.downloadDbs(require("path").join(require("@electron/remote").app.getPath("userData"), "geoIPcache")).then(() => {
            geolite2.open('GeoLite2-City', path => {
                 return maxmind.open(path);
@@ -54,6 +55,8 @@ class Netstat {
                 this.geoLookup = lookup;
                 this.lastconn.finished = true;
             });
+        }).catch(e => {
+            console.warn("GeoIP database unavailable, location globe disabled:", e);
         });
     }
     updateInfo() {
