@@ -176,7 +176,14 @@ class Terminal {
             let sockHost = opts.host || "127.0.0.1";
             let sockPort = this.port;
 
-            this.socket = new WebSocket("ws://"+sockHost+":"+sockPort);
+            // Per-session secret issued by the main process (fix for CVE-2023-30856)
+            let sockToken = "";
+            try {
+                sockToken = require("@electron/remote").getGlobal("edexTermTokens")[sockPort] || "";
+            } catch(e) {
+                console.error("Could not obtain terminal token", e);
+            }
+            this.socket = new WebSocket("ws://"+sockHost+":"+sockPort+"/?token="+encodeURIComponent(sockToken));
             this.socket.onopen = () => {
                 let attachAddon = new AttachAddon(this.socket);
                 this.term.loadAddon(attachAddon);
@@ -422,15 +429,28 @@ class Terminal {
                 this.onclosed(code, signal);
             });
 
+            // Security (CVE-2023-30856 + LAN exposure): loopback only, eDEX's own page only,
+            // must present the per-session token, and only one client at a time.
+            this._token = require("crypto").randomBytes(32).toString("hex");
+            global.edexTermTokens = global.edexTermTokens || {};
+            global.edexTermTokens[this.port] = this._token;
             this.wss = new this.Websocket({
+                host: "127.0.0.1",
                 port: this.port,
                 clientTracking: true,
                 verifyClient: info => {
-                    if (this.wss.clients.length >= 1) {
+                    let origin = info.origin || "";
+                    if (origin !== "file://" && origin !== "null" && origin !== "") return false;
+                    let token;
+                    try {
+                        token = new URL(info.req.url, "ws://127.0.0.1").searchParams.get("token") || "";
+                    } catch(e) {
                         return false;
-                    } else {
-                        return true;
                     }
+                    let a = Buffer.from(token), b = Buffer.from(this._token);
+                    if (a.length !== b.length || !require("crypto").timingSafeEqual(a, b)) return false;
+                    if (this.wss.clients.size >= 1) return false;
+                    return true;
                 }
             });
             this.Ipc.on("terminal_channel-"+this.port, (e, ...args) => {
