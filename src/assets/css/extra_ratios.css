@@ -1,5 +1,6 @@
 /* Support for other screen ratios than 16:9 */
-@media (aspect-ratio: 16/10) {
+/* Range instead of exact 16/10: MacBook screens (notch/menu bar) land around 1.55-1.6 */
+@media (min-aspect-ratio: 3/2) and (max-aspect-ratio: 17/10) {
     section#filesystem > h3.title {
         width: 43.5vw;
     }

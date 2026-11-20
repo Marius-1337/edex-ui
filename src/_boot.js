@@ -73,9 +73,9 @@ try {
 // Create default settings file
 if (!fs.existsSync(settingsFile)) {
     fs.writeFileSync(settingsFile, JSON.stringify({
-        shell: (process.platform === "win32") ? "powershell.exe" : "bash",
+        shell: (process.platform === "win32") ? "powershell.exe" : (process.platform === "darwin" ? (require("os").userInfo().shell || "zsh") : "bash"),
         shellArgs: '',
-        cwd: electron.app.getPath("userData"),
+        cwd: require("os").homedir(),
         keyboard: "en-US",
         theme: "tron",
         termFontSize: 15,
@@ -96,6 +96,21 @@ if (!fs.existsSync(settingsFile)) {
         experimentalFeatures: false
     }, "", 4));
     signale.info(`Default settings written to ${settingsFile}`);
+}
+// macOS fork migration: older defaults started bash inside the app's config folder
+if (process.platform === "darwin") {
+    try {
+        let s = JSON.parse(fs.readFileSync(settingsFile, {encoding: "utf-8"}));
+        if (!s.macosDefaultsMigrated) {
+            if (s.cwd === electron.app.getPath("userData")) s.cwd = require("os").homedir();
+            if (s.shell === "bash") s.shell = require("os").userInfo().shell || "zsh";
+            s.macosDefaultsMigrated = true;
+            fs.writeFileSync(settingsFile, JSON.stringify(s, "", 4));
+            signale.info("Migrated settings to macOS defaults (login shell, home directory)");
+        }
+    } catch(e) {
+        signale.warn("Could not migrate settings:", e.message);
+    }
 }
 // Create default shortcuts file
 if (!fs.existsSync(shortcutsFile)) {
